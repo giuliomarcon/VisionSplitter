@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('visionsplitter:server');
+var debug = require('debug')('testnodejs:server');
 var http = require('http');
 
 /**

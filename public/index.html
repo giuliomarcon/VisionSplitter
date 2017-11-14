@@ -36,7 +36,22 @@
                 </div>
             </div>
             <div class="card-body">
-  
+              <div data-bind="foreach: membri">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h4><i class="fa d-inline fa-circle" data-bind="style: {color: color}"></i>&nbsp&nbsp<input style="width:70%" data-bind="value: name" /> </h4>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row">
+                      <div class="col-md-8">
+                        <p id="c_lead" class="lead pi-draggable text-muted">+ 0,00 €</p>
+                      </div>
+                      <div class="col-md-4">
+                        <a href="#" class="btn btn-danger btn-sm text-light" style="font-size:10px" data-bind="click: $root.removeMembro"><i class="fa fa-lg fa-times"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -66,6 +81,10 @@
                 <td>
                   <a href="#" class="btn btn-danger btn-sm text-light pull-right" style="margin-left: 5px" data-bind="click: $root.removeOggetto"><i class="fa fa-lg fa-times"></i></a>
                   <div id="c_btn-group" class="pi-draggable btn-group pull-right" draggable="true">
+                    <a href="#" class="btn btn-success btn-sm text-light">Tutti</a>
+                    <a href="#" class="btn btn-primary btn-sm text-light">Gino</a>
+                    <a href="#" class="btn btn-primary btn-sm text-light">Simo</a>
+                    <a href="#" class="btn btn-primary btn-sm text-light">Anto</a>
                   </div>
                 </td>
               </tr>
