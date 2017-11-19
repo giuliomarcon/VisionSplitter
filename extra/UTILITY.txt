@@ -1,0 +1,11 @@
+APP HEROKU:
+https://git.heroku.com/boiling-garden-87621.git
+https://git.heroku.com/sheltered-ridge-89639.git
+
+DATABASE:
+mongodb://neflux:illcreatestrongai@ds115546.mlab.com:15546/vision-splitter
+
+CONNESSIONE GOOGLE (Windows):
+set GCLOUD_PROJECT=unitn-182714
+set GOOGLE_APPLICATION_CREDENTIALS=PATH AL JSON GOOGLE_TOKEN.json
+
