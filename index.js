@@ -34,7 +34,9 @@ app.post('/upload', upload.single('image'), function(req, res, next) { // Get th
   // Read a local image as a text document
   vision.documentTextDetection({ source: { filename: req.file.path } })
     .then((results) => {
-      //console.log(util.inspect(results, false, null));
+
+      res.write('<img width="500" src="' + base64Image(req.file.path) + '"><br>');
+      console.log(util.inspect(results, false, null));
       const fullTextAnnotation = results[0].fullTextAnnotation;
 
       var json = JSON.stringify(results);
@@ -47,9 +49,8 @@ app.post('/upload', upload.single('image'), function(req, res, next) { // Get th
           console.log(vertex.x+"-"+vertex.y)
         }
       }
-      //console.log(fullTextAnnotation.text);
-      //res.write(fullTextAnnotation.text);
-      res.write('<img width="500" src="' + base64Image(req.file.path) + '"><br>');
+      console.log(fullTextAnnotation.text);
+      res.write(fullTextAnnotation.text);
       res.end('</body></html>');
     })
     .catch((err) => {
