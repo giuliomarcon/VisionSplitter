@@ -6,7 +6,17 @@ var fs = require('fs');
 var util = require('util');
 var mime = require('mime');
 var multer = require('multer');
-var upload = multer({dest: 'uploads/'});
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, 'Image - ' + Date.now())
+  }
+})
+
+var upload = multer({storage: storage});
 
 var app = express();
 
