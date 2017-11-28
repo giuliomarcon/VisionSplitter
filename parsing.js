@@ -15,18 +15,23 @@ fs.readFile('myjsonfile.json', 'utf8', function readFileCallback(err, data){
 
     var myString = "";
     for(var page of json[0].fullTextAnnotation.pages){
+      myString = myString + "Inizio Pagina\n";
       for(var block of page.blocks){
+        myString = myString + "Inizio Blocco\n";
         for(var paragraph of block.paragraphs){
+          myString = myString + "Inizio Paragrafo\n";
           for(var word of paragraph.words){
             for(var symbol of word.symbols){
               myString = myString + symbol.text;
             }
             myString = myString + " ";
           }
-          myString = myString + "\n";
+          myString = myString + "\nFine Paragrafo\n";
         }
-        myString = myString + "\n\n";
+        myString = myString + "Fine Blocco\n";
+        myString = myString + "\n";
       }
+      myString = myString + "Fine Pagina\n";
     }
 
     console.log(myString);
