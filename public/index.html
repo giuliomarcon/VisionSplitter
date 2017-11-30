@@ -36,10 +36,17 @@
                 </div>
             </div>
             <div class="card-body">
-              <div data-bind="foreach: membri">
-                <div class="row">
-                  <div class="col-md-6">
-                    <h4><i class="fa d-inline fa-circle" data-bind="style: {color: color}"></i>&nbsp&nbsp<input style="width:70%" data-bind="value: name" /> </h4>
+              <div class="row" data-bind="drop: function(data, event){ $root.setKing($data, event)}">
+                  <div class="col-md-7">
+                    <h4>
+                      <span data-bind="if: isKing() == 1">
+                        <img src="chess.png" width="23px" height="23px" style="margin-bottom:5px; cursor: move" data-bind="drag: function(data, event){ $root.removeKing($data, event)}"/>
+                      </span>
+                      <span data-bind="if: isKing() == 0">
+                        <img src="chess.png" width="23px" height="23px" style="margin-bottom:5px; opacity:0.45; filter:grayscale(100%);"/>
+                      </span>
+                      &nbsp
+                      <i class="fa d-inline fa-circle" data-bind="style: {color: color}"></i>&nbsp&nbsp<input style="width:70%" data-bind="textInput: name, value: name" /> </h4>
                   </div>
                   <div class="col-md-6">
                     <div class="row">
