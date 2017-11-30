@@ -81,10 +81,10 @@
                 <td>
                   <a href="#" class="btn btn-danger btn-sm text-light pull-right" style="margin-left: 5px" data-bind="click: $root.removeOggetto"><i class="fa fa-lg fa-times"></i></a>
                   <div id="c_btn-group" class="pi-draggable btn-group pull-right" draggable="true">
-                    <a href="#" class="btn btn-success btn-sm text-light">Tutti</a>
-                    <a href="#" class="btn btn-primary btn-sm text-light">Gino</a>
-                    <a href="#" class="btn btn-primary btn-sm text-light">Simo</a>
-                    <a href="#" class="btn btn-primary btn-sm text-light">Anto</a>
+                    <a href="#" class="btn btn-success btn-sm text-light" data-bind="click: $root.setTutti">Tutti</a>&nbsp;
+                    <div data-bind="foreach: $root.membri">
+                      <a href="#" class="btn btn-primary btn-sm text-light" data-bind="text: name, style: {backgroundColor: color, borderColor: color}, click: function(data, event){ $root.changeAssignedPerson($data, $parent, event)}"></a>
+                    </div>
                   </div>
                 </td>
               </tr>
