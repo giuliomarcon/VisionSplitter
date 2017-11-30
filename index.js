@@ -32,7 +32,7 @@ app.post('/upload', upload.single('image'), function(req, res, next) { // Get th
   res.write('<!DOCTYPE HTML><html><body>');
   console.log("roba: " +req.file.path);
   // Read a local image as a text document
-  vision.documentTextDetection({ source: { filename: req.file.path } })
+  vision.textDetection({ source: { filename: req.file.path } })
     .then((results) => {
 
       res.write('<img width="500" src="' + base64Image(req.file.path) + '"><br>');
@@ -40,8 +40,8 @@ app.post('/upload', upload.single('image'), function(req, res, next) { // Get th
       const fullTextAnnotation = results[0].fullTextAnnotation;
 
       var json = JSON.stringify(results);
-      fs.writeFile('./myjsonfile.json', json, 'utf8');
-
+      fs.writeFile('./myjsonfile2.json', json, 'utf8');
+/*
       for(let box of results[0].textAnnotations){
         var points = [];
         for(let vertex of box.boundingPoly.vertices){
@@ -50,7 +50,7 @@ app.post('/upload', upload.single('image'), function(req, res, next) { // Get th
         }
       }
       console.log(fullTextAnnotation.text);
-      res.write(fullTextAnnotation.text);
+      res.write(fullTextAnnotation.text);*/
       res.end('</body></html>');
     })
     .catch((err) => {
