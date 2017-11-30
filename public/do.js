@@ -47,6 +47,20 @@ function OggettoViewModel() {
     }
     
     self.removeMembro = function(membro) { self.membri.remove(membro) }
+
+    self.changeAssignedPerson = function(membro,oggetto,event) {
+		oggetto.person.remove("Tutti");
+
+		if (oggetto.person.indexOf(membro.name()) < 0)
+		oggetto.person.push(membro.name());
+		else
+		oggetto.person.remove(membro.name());
+
+		self.calcola();
+		}
+
+		self.setTutti = function(oggetto) { oggetto.person = ko.observableArray(["Tutti"]); self.calcola();
+	}
 }
 
 ko.applyBindings(new OggettoViewModel());
