@@ -6,166 +6,75 @@ var threshold = 10; // threshold for y coordinate (line) just in case image is s
                     // this is used for identifying each block of text are in the same line.
 var thresholdXPct = 20; // threshold for x coordinate - just in case the result is a skewed box
 
-fs.readFile('myjsonfile2.json', 'utf8', function readFileCallback(err, data){
+fs.readFile('myjsonfile3.json', 'utf8', function readFileCallback(err, data){
     if (err){
         console.log(err);
     } else {
 
-    var res = JSON.parse(data);
+    var json = JSON.parse(data);
     //console.log(util.inspect(json, false, null));
-    //console.log(json[0].fullTextAnnotation);
-/*
-    var myString = "";
+
+    myThreshold = 5;
+    function fits(word, row){
+      if(Math.abs(row.average_y-word.y)<myThreshold)
+        return true;
+      else
+        return false;
+    }
+
+    var words = [];
     for(var page of json[0].fullTextAnnotation.pages){
-      myString = myString + "Inizio Pagina\n";
       for(var block of page.blocks){
-        myString = myString + "\tInizio Blocco\n";
         for(var paragraph of block.paragraphs){
-          myString = myString + "\t\tInizio Paragrafo\n\t\t\t";
           for(var word of paragraph.words){
+            var newWord = { text: "", y: -1};
             for(var symbol of word.symbols){
-              myString = myString + symbol.text;
+              newWord.text += symbol.text;
             }
-            myString = myString + " ";
+            newWord.y = symbol.boundingBox.vertices[2].y;
+            words.push(newWord);
           }
-          myString = myString + "\n\t\tFine Paragrafo\n";
         }
-        myString = myString + "\tFine Blocco\n";
-        myString = myString + "\n";
       }
-      myString = myString + "Fine Pagina\n";
     }
 
-    //console.log(myString);
-*/
 
-    console.log("Start Detection...");
-    var line = -1;
-    var sentences = [];
-    var sentencesBounds = [];
-    var s = "";
-    var endx = 0, endXMin, endXMax, startx = 0, startxcount = 0, startXMax;
 
-    // 1. define farthest right x coordinate
-    for(var i in res){
-      if(i == 0) continue;
-      var bounds = res[i].bounds;
-      endx = Math.max(endx,Math.max(res[i].bounds[1].x,res[i].bounds[3].x)); // get the farthest right x coordinate
+    function updateCoord(row) {
+      var sum = 0;
+      var count = 0;
+      for(var word of row.words) {
+        sum += word.y;
+        count++;
+      }
+      row.average_y = sum / count;
     }
 
-    endXMin = endx - thresholdXPct*endx/100; // calculate threshold for x
+    //righe[] = { words = new Array(), average_y = -1};
 
-    // 2. construct sentence line by line.
-    var lastbounds;
-    for(var i in res){
-      if(i == 0) continue;
-      var bounds = res[i].bounds;
-      var thisavg = (bounds[2].y+bounds[3].y)/2;
-      if(line < 0) line = thisavg;
-
-      // check if the middle of the 'word' is within the line threshold
-      if(Math.abs(thisavg - line) <= threshold){
-        s += " "+res[i].desc; // within the threshold, add to line with 'space delimited'
-      }
-      else{ // beyond threshold
-        var avgendx = (lastbounds[1].x+lastbounds[3].x)/2;
-
-        if(avgendx >= endXMin){ // assume a new line, pushing the old sentence to the list.
-          sentences.push(s);
-          sentencesBounds.push(bounds);
-        }
-        s = res[i].desc; // create new line
-        startx += bounds[0].x;
-        startxcount++;
-      }
-      line = thisavg;
-      lastbounds = bounds;
-    }
-
-    startx /= startxcount;
-    startXMax = startx+thresholdXPct*startx/100;
-    var result = [];
-
-    // 3. getting the 'last price' - from the rightest part of sentence and traverse to the left.
-    for(var j in sentences){
-      var sr = sentences[j].split(" ");
-      console.log("--> setence is ",sentences[j]);
-      console.log("---->sr is ",sr);
-
-
-      var numCandidate = "";
-      var checkBefore = true;
-
-      // going from right to left
-      for (var iBack= sr.length; iBack--; iBack <=0 ) {
-        var word = sr[iBack].trim();
-
-        // google vision 'cuts' word by space (?), so sometime we see the amount 2, 000 is cut into
-        // 2 words, need to join this into a number.
-        if (word.startsWith(',') || word.startsWith('.')) {
-          word = word.replace(/,/g,"");
-          var num = Number(word);
-          if (!num) {
-            console.log('------>stop at word: '+word);
-            break; // end -- not an umber;
-          } else {
-            numCandidate = word+numCandidate;
-            console.log('------> numCandidate is: ', numCandidate);
-            checkBefore = true;
-            continue;
-          }
-
-        } else if (word.endsWith(',') || word.endsWith('.')) {
-            word = word.replace(/,/g,"");
-            var num = Number(word);
-            if (!num) {
-              console.log('------>stop at word: '+word);
-              break; // end -- not an umber;
-            } else {
-              numCandidate = word+numCandidate;
-              console.log('------> numCandidate is: ', numCandidate);
-              checkBefore = false;
-              continue;
-            }
-        } else if (checkBefore) {
-            word = word.replace(/,/g,"");
-            var num = Number(word);
-            if (!num) {
-              console.log('------>stop at word: '+word);
-              break; // end -- not an umber;
-            } else {
-              numCandidate = word+numCandidate;
-              console.log('------> numCandidate is: ', numCandidate);
-              checkBefore = false;
-              continue;
-            }
-        } else {
-          console.log('------>stop at word: '+word);
+    var righe = new Array();
+    var found;
+    for(var word of words){
+      found = false;
+      for(var riga of righe){
+        if(fits(word, riga)){
+          found = true;
+          riga.words.push(word);
+          updateCoord(riga);
           break;
         }
-
       }
-
-      console.log("------>candidate is ",numCandidate);
-
-      // 4. construct the result. return is list of number and bounds (last word bounds).
-      // bounds are needed to 'highlight' the part in the UI
-      var num = Number(numCandidate);
-      if(!num || num < 100){
-        if(result.length == 0 || num < 100)continue;
-      }  else {
-        result.push (
-          { 'number': Number(numCandidate),
-            'bounds': sentencesBounds[j]
-          }
-        );
+      if(!found){
+        var tmp = new Array();
+        tmp.push(word);
+        righe.push({
+          words: tmp,
+          average_y: word.y
+        });
       }
     }
 
-    result = { 'textDetectionResult': result };
+    console.log(util.inspect(righe, false, null));
 
-    console.log("result ",JSON.stringify(result));
-    console.log(util.inspect(result, false, null));
-    console.log("End Detection...");
-  }
+  } //else
 });
