@@ -61,6 +61,12 @@ function OggettoViewModel() {
 
 		self.setTutti = function(oggetto) { oggetto.person = ko.observableArray(["Tutti"]); self.calcola();
 	}
+
+    self.removeKing = function(data,event) { self.dragging = data; }
+
+    self.setKing = function(data,event) { self.dragging.isKing(0); data.isKing(1); self.calcola();} 
+
+    self.dragging = "";
 }
 
 ko.applyBindings(new OggettoViewModel());
