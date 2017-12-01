@@ -1,10 +1,7 @@
 var fs = require('fs');
 var util = require('util'); //per util.inspect
 var jsonfile = require('jsonfile');
-
-var threshold = 10; // threshold for y coordinate (line) just in case image is skewed.
-                    // this is used for identifying each block of text are in the same line.
-var thresholdXPct = 20; // threshold for x coordinate - just in case the result is a skewed box
+var levenshtein = require('./fast-levenshtein-master/levenshtein.js');
 
 fs.readFile('myjsonfile3.json', 'utf8', function readFileCallback(err, data){
     if (err){
@@ -70,7 +67,8 @@ fs.readFile('myjsonfile3.json', 'utf8', function readFileCallback(err, data){
         righe.push({
           words: tmp,
           average_y: word.y,
-          isValid: false
+          isValid: false,
+          price: null
         });
       }
     }
@@ -78,15 +76,19 @@ fs.readFile('myjsonfile3.json', 'utf8', function readFileCallback(err, data){
     // Setta isValid = true in caso words contenga un prezzo
     for(var riga of righe){
       var i = 0;
+      var whole, decimal;
       for(var word of riga.words){
-        if(!isNaN(word.text)){
+        if(!isNaN(word.text)){  //se è un numero
+          if (i == 0 || i == 1) {
+            whole = word.text;
+            i = 1;
+          }
           if(i == 2){
             riga.isValid = true;
+            decimal = word.text;
+            riga.price = parseFloat(whole + "." + decimal);
             break;  // da prestare attenzione ai casi con due prezzi per singolo words
           }
-          else
-            i = 0;
-          i++;
         }
         else if((word.text == "." || word.text == ",") && i == 1)
           i++;
@@ -98,25 +100,63 @@ fs.readFile('myjsonfile3.json', 'utf8', function readFileCallback(err, data){
     // Accorpamento di nome e relativo prezzo in un singolo item dell'array final
     var final = new Array();
     var i = 0;
-    var lastRow = { words: new Array(), isValid: false };
+    var lastRow = { words: new Array(), isValid: false, price: null, title: "" };
     for(var riga of righe) {
       if (!riga.isValid){
         lastRow = riga;
         i = 1;
       }
       else if(i == 1 && riga.isValid){
-        for(var row of riga.words){
-          lastRow.words.push(row);
+        /*
+        var finalName = "";
+        for(var word of lastRow.words){
+          finalName += word.text + " ";
         }
+        lastRow.title = finalName;*/
+
+        for(var word of riga.words){
+          lastRow.words.push(word);
+        }
+        lastRow.price = riga.price;
         final.push(lastRow);
-        console.log("Pusho in final lastrow:\n" + util.inspect(lastRow, false, null)); //TODO: REMOVE THIS
+
         i = 0;
       }
       else if (riga.isValid) {
-        console.log("Ho già una riga pronta:\n" + util.inspect(riga,false,null)); //TODO: REMOVE THIS
         final.push(riga);
       }
     }
+
+    //Controllo totale
+    var total;
+    var found = false;
+    var i = 0;
+    for(var row of final) {
+      for(var word of row.words) {
+        if (levenshtein.get(word.text.toUpperCase(),'TOTALE') < 2) {
+            total = row.price;
+            found = true;
+        }
+      }
+      if (found) break;
+      i++;
+    }
+    if (found)
+      final = final.slice(0, i);
+
+    console.log(" TOTALE: " + total);
+
+    //Controllo consistenza dati
+    var checkSum = 0;
+    for (var row of final) {
+      checkSum = checkSum + row.price;
+    }
+    if (checkSum == total)
+      console.log("Dati consistenti");
+    else
+      console.log("Dati NON consistenti");
+
+    console.log(util.inspect(final, false, null));
 
   } //else
 });
