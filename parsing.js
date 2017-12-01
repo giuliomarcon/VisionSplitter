@@ -41,9 +41,11 @@ function isDiscount(row){
 
 function printRow(rows){
   for(var row of rows){
+    process.stdout.write("\nProdotto: ");
     for(var word of row.words) {
       process.stdout.write(word.text + " ");
     }
+    console.log("\nPrezzo finale: " + row.price);
   }
 }
 
