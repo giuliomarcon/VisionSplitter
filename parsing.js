@@ -3,7 +3,7 @@ var util = require('util'); //per util.inspect
 var jsonfile = require('jsonfile');
 var levenshtein = require('./fast-levenshtein-master/levenshtein.js');
 
-fs.readFile('myjsonfile3.json', 'utf8', function readFileCallback(err, data){
+fs.readFile('myjsonfile4.json', 'utf8', function readFileCallback(err, data){
     if (err){
         console.log(err);
     } else {
@@ -45,7 +45,7 @@ fs.readFile('myjsonfile3.json', 'utf8', function readFileCallback(err, data){
         sum += word.y;
         count++;
       }
-      row.average_y = sum / count;
+      row.average_y = Math.round((sum / count) * 10) / 10;
     }
 
     // Inserisce in righe i vari array di parole opportune
@@ -97,8 +97,8 @@ fs.readFile('myjsonfile3.json', 'utf8', function readFileCallback(err, data){
       }
     }
 
-    // Accorpamento di nome e relativo prezzo in un singolo item dell'array final
-    var final = new Array();
+    // Accorpamento di nome e relativo prezzo in un singolo item dell'array mergedRows
+    var mergedRows = new Array();
     var i = 0;
     var lastRow = { words: new Array(), isValid: false, price: null, title: "" };
     for(var riga of righe) {
@@ -106,26 +106,53 @@ fs.readFile('myjsonfile3.json', 'utf8', function readFileCallback(err, data){
         lastRow = riga;
         i = 1;
       }
-      else if(i == 1 && riga.isValid){
-        /*
-        var finalName = "";
-        for(var word of lastRow.words){
-          finalName += word.text + " ";
-        }
-        lastRow.title = finalName;*/
+      else if(i == 1 && riga.isValid){ // è il caso di accorpare
 
         for(var word of riga.words){
           lastRow.words.push(word);
         }
         lastRow.price = riga.price;
-        final.push(lastRow);
-
+        lastRow.isValid = true;
+        mergedRows.push(lastRow);
         i = 0;
       }
       else if (riga.isValid) {
-        final.push(riga);
+        mergedRows.push(riga);
       }
     }
+
+    // Ordina le righe già accorpate in base all'altezza per riconoscere bene gli sconti
+    mergedRows.sort(function(a, b) {
+      return parseFloat(a.average_y) - parseFloat(b.average_y);
+    });
+
+    // Controlla se la riga contiene uno sconto
+    function isDiscount(row){
+      var found = false;
+      for(var word of row.words){
+        if(levenshtein.get(word.text.toUpperCase(),'SCONTO') < 2){
+          found = true;
+          break;
+        }
+      }
+      return found;
+    }
+
+    //Corregge i prezzi in caso rilevi sconto su riga inferiore
+    var final = new Array();
+    var lastRow = mergedRows[0]; //check se è vuoto?
+    for(var i = 1; i < mergedRows.length; i++){
+      if(isDiscount(mergedRows[i])) {
+        lastRow.price = lastRow.price - Math.abs(mergedRows[i].price); //abs just in case
+        final.push(lastRow);
+        i++;
+      }
+      else {
+        final.push(lastRow);
+      }
+      lastRow = mergedRows[i];
+    }
+    final.push(lastRow);
 
     //Controllo totale
     var total;
@@ -156,7 +183,7 @@ fs.readFile('myjsonfile3.json', 'utf8', function readFileCallback(err, data){
     else
       console.log("Dati NON consistenti");
 
-    console.log(util.inspect(final, false, null));
 
+    console.log(util.inspect(final, false, null));
   } //else
 });
