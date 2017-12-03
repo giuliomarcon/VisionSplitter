@@ -1,12 +1,12 @@
 var fs = require('fs');
 var util = require('util'); //per util.inspect
 var jsonfile = require('jsonfile');
-var levenshtein = require('./fast-levenshtein-master/levenshtein.js');
+var levenshtein = require('./libs/fast-levenshtein-master/levenshtein.js');
 
 const PIXEL_THRESHOLD = 5;
 const Y_PRECISION =     10;
-const JSON_FILE =       'myjsonfile4.json';
-const DISCOUNT_DICT =   'discount.json'
+const JSON_FILE =       './assets/json/myjsonfile.json';
+const DISCOUNT_DICT =   './assets/json/discount.json'
 const LEVENSHTEIN =     2;
 var MAX_TITLE_SIZE =    0;
 
