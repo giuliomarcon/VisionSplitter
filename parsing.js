@@ -6,6 +6,7 @@ var levenshtein = require('./fast-levenshtein-master/levenshtein.js');
 const PIXEL_THRESHOLD = 5;
 const Y_PRECISION =     10;
 const JSON_FILE =       'myjsonfile4.json';
+const DISCOUNT_DICT =   'discount.json'
 const LEVENSHTEIN =     2;
 var MAX_TITLE_SIZE =    0;
 
@@ -31,12 +32,36 @@ function updateAverageHeight(row) {
 // Controlla se la riga contiene uno sconto
 function isDiscount(row){
   var found = false;
+
   for(var word of row.words){
     if(levenshtein.get(word.text.toUpperCase(),'SCONTO') < LEVENSHTEIN){
       found = true;
       break;
     }
   }
+/*
+  fs.readFile(DISCOUNT_DICT, 'utf8', function readFileCallback(err, data){
+    if (err){
+      console.log(err);
+    } else {
+      var discountWords = JSON.parse(data);
+      console.log(discountWords);
+      for(var word of row.words){
+        for(var discountWord of discountWords){
+          if(word.text.toUpperCase() == discountWord.toUpperCase()){
+            //console.log("è uno sconto: '"+word.text+"'");
+            found = true;
+            break;
+          }
+          else {
+            //console.log("non è uno sconto: '"+word.text+"'");
+          }
+        }
+        if(found) break;
+      }
+    }
+  });
+*/
   return found;
 }
 
