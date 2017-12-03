@@ -40,8 +40,8 @@ app.post('/upload', upload.single('image'), function(req, res, next) { // Get th
       const fullTextAnnotation = results[0].fullTextAnnotation;
 
       var json = JSON.stringify(results);
-      fs.writeFile('./myjsonfile.json', json, 'utf8');
-
+      fs.writeFile('./myjsonfile3.json', json, 'utf8');
+/*
       for(let box of results[0].textAnnotations){
         var points = [];
         for(let vertex of box.boundingPoly.vertices){
@@ -50,7 +50,7 @@ app.post('/upload', upload.single('image'), function(req, res, next) { // Get th
         }
       }
       console.log(fullTextAnnotation.text);
-      res.write(fullTextAnnotation.text);
+      res.write(fullTextAnnotation.text);*/
       res.end('</body></html>');
     })
     .catch((err) => {
