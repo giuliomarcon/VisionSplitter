@@ -4,9 +4,10 @@ var jsonfile = require('jsonfile');
 var levenshtein = require('./fast-levenshtein-master/levenshtein.js');
 
 const PIXEL_THRESHOLD = 5;
-const PRECISION = 10;
-const JSON_FILE = 'myjsonfile4.json';
-const LEVENSHTEIN = 2;
+const Y_PRECISION =     10;
+const JSON_FILE =       'myjsonfile4.json';
+const LEVENSHTEIN =     2;
+var MAX_TITLE_SIZE =    0;
 
 // Controlla che la word ci stia (in altezza) nella row
 function fits(word, row){
@@ -24,7 +25,7 @@ function updateAverageHeight(row) {
     sum += word.y;
     count++;
   }
-  row.average_y = Math.round((sum / count) * PRECISION) / PRECISION;
+  row.average_y = Math.round((sum / count) * Y_PRECISION) / Y_PRECISION;
 }
 
 // Controlla se la riga contiene uno sconto
@@ -40,12 +41,32 @@ function isDiscount(row){
 }
 
 function printRow(rows){
+  var counter = 0, firstRow = true;
   for(var row of rows){
-    process.stdout.write("\nProdotto: ");
-    for(var word of row.words) {
-      process.stdout.write(word.text + " ");
+    for(var word of row.words){
+      counter += word.text.length + 1;
     }
-    console.log("\nPrezzo finale: " + row.price);
+    counter -= 1; //lo spazio extra alla fine
+    if(counter > MAX_TITLE_SIZE) {
+      MAX_TITLE_SIZE = counter;
+    }
+    counter = 0;
+  }
+  for(var row of rows){
+    var titleLength = 0;
+    process.stdout.write((firstRow?"\n":"")); firstRow = false;
+    for(var i = 0; i < row.words.length; i++) {
+      if(i == row.priceIndex){
+        i += 2;
+        //process.stdout.write("del del del ");
+      }
+      else {
+        var partialTitle = row.words[i].text.toUpperCase() + (i == row.words.length?"":" ");
+        titleLength += partialTitle.length;
+        process.stdout.write(partialTitle);
+      }
+    }
+    console.log("".padEnd(MAX_TITLE_SIZE-titleLength) + row.price);
   }
 }
 
@@ -92,14 +113,15 @@ fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
           words: tmp,
           average_y: word.y,
           isValid: false,
-          price: null
+          price: null,
+          priceIndex: null
         });
       }
     }
 
     // Setta isValid della row a 'true' in caso words contenga un prezzo
     for(var row of rows){
-      var i = 0, whole, decimal;
+      var i = 0, whole, decimal, index = 0;
       for(var word of row.words){
         if(!isNaN(word.text)){  //se è un numero
           if (i == 0 || i == 1) {
@@ -110,6 +132,7 @@ fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
             row.isValid = true;
             decimal = word.text;
             row.price = parseFloat(whole + "." + decimal);
+            row.priceIndex = index - 2;
             break;  // da prestare attenzione ai casi con due prezzi per singolo words
           }
         }
@@ -117,6 +140,7 @@ fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
           i++;
         else
           i = 0;
+        index++;
       }
     }
 
@@ -126,7 +150,7 @@ fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
         words: [],
         isValid: false,
         price: null,
-        title: ""
+        title: "",
       };
     for(var row of rows) {
       if (!row.isValid){
@@ -134,6 +158,7 @@ fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
         i = 1;
       }
       else if(i == 1 && row.isValid){ // è il caso di accorpare
+        lastRow.priceIndex = row.priceIndex + lastRow.words.length;
         for(var word of row.words){
           lastRow.words.push(word);
         }
@@ -181,19 +206,21 @@ fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
     }
     if (found)
       final = final.slice(0, i);
-    console.log(" TOTALE: " + total);
 
     //Controllo consistenza dati
+    printRow(final);
     var checkSum = 0;
     for (var row of final) {
       checkSum = checkSum + row.price;
     }
     if (checkSum == total){
-        console.log("Dati consistenti");
-        printRow(final);
+        console.log("TOTALE ".padEnd(MAX_TITLE_SIZE) + total);
     }
-    else
-      console.log("Dati NON consistenti");
+    else {
+      console.log("TOTALE RICONOSCIUTO ".padEnd(MAX_TITLE_SIZE) + total);
+      console.log("TOTALE CALCOLATO ".padEnd(MAX_TITLE_SIZE) + total);
+      console.log("\nDati non consistenti");
+    }
 
     /*
     // Debug completo
