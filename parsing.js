@@ -32,14 +32,13 @@ function updateAverageHeight(row) {
 // Controlla se la riga contiene uno sconto
 function isDiscount(row){
   var found = false;
-
   for(var word of row.words){
     if(levenshtein.get(word.text.toUpperCase(),'SCONTO') < LEVENSHTEIN){
       found = true;
       break;
     }
   }
-/*
+  /*
   fs.readFile(DISCOUNT_DICT, 'utf8', function readFileCallback(err, data){
     if (err){
       console.log(err);
@@ -65,7 +64,9 @@ function isDiscount(row){
   return found;
 }
 
+// Stampa a video il risultato finale e restituisce l'array per il front-end
 function printRow(rows){
+  var result = [];
   var counter = 0, firstRow = true;
   for(var row of rows){
     for(var word of row.words){
@@ -78,7 +79,7 @@ function printRow(rows){
     counter = 0;
   }
   for(var row of rows){
-    var titleLength = 0;
+    var titleLength = 0, title = "";
     process.stdout.write((firstRow?"\n":"")); firstRow = false;
     for(var i = 0; i < row.words.length; i++) {
       if(i == row.priceIndex){
@@ -88,11 +89,14 @@ function printRow(rows){
       else {
         var partialTitle = row.words[i].text.toUpperCase() + (i == row.words.length?"":" ");
         titleLength += partialTitle.length;
+        title += partialTitle;
         process.stdout.write(partialTitle);
       }
     }
+    result.push({name: title, price: row.price});
     console.log("".padEnd(MAX_TITLE_SIZE-titleLength) + row.price);
   }
+  return result;
 }
 
 fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
@@ -233,7 +237,13 @@ fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
       final = final.slice(0, i);
 
     //Controllo consistenza dati
-    printRow(final);
+    var json_export = printRow(final);
+    module.exports = {
+      foo: function () {
+        return printRow(final);
+      }
+    };
+    //console.log(util.inspect(json_export, false, null));
     var checkSum = 0;
     for (var row of final) {
       checkSum = checkSum + row.price;
