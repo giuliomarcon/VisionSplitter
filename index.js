@@ -11,6 +11,7 @@ var opn = require('opn');			                // Per aprire il browser
 var Vision = require('@google-cloud/vision'); // Imports the Google Cloud client library
 var util = require('util');
 var jsonfile = require('jsonfile');
+var parsing = require('./libs/parsing.js');
 
 var app = express();
 var vision = new Vision();                    // Creates a client
@@ -118,22 +119,41 @@ function printRow(rows){
   return result;
 }
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(req, res) {
-  res.writeHead(200, {
-    'Content-Type': 'text/html'
-  });
-  res.end('<!DOCTYPE HTML><html><body>' +  // Simple upload form
-    "<form method='post' action='/upload' enctype='multipart/form-data'>" +
-    "<input type='file' name='image'/>" +
-    "<input type='submit' /></form>" +
-    '</body></html>');
-}).listen(PORT);
+  res.sendFile(path.join(__dirname, 'views/index.html'));
+});
 
 app.post('/upload', upload.single('image'), function(req, res, next) { // Get the uploaded image, Image is uploaded to req.file.path
-  res.write('<!DOCTYPE HTML><html><body>');
-  //console.log("roba: " +req.file.path);
+  // create an incoming form object
+  var form = new formidable.IncomingForm();
+
+  // specify that we want to allow the user to upload multiple files in a single request
+  form.multiples = false;
+
+  // store all uploads in the /uploads directory
+  form.uploadDir = path.join(__dirname, '/uploads');
+
+  // every time a file has been uploaded successfully,
+  // rename it to it's orignal name
+  form.on('file', function(field, file) {
+    fs.rename(file.path, path.join(form.uploadDir, file.name));
+  });
+
+  // log any errors that occur
+  form.on('error', function(err) {
+    console.log('An error has occured: \n' + err);
+  });
+
+  // once all the files have been uploaded, send a response to the client
+  form.on('end', function() {
+    res.end('success');
+  });
+
+  // parse the incoming request containing the form data
+  form.parse(req);
+
   vision.documentTextDetection({ source: { filename: req.file.path } })
     .then((results) => {
       res.write('<img width="500" src="' + base64Image(req.file.path) + '"><br>');

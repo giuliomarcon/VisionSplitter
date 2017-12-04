@@ -23,7 +23,7 @@
     <div class="container">
       <div class="row">
         <div class="col-md-6">
-          <img class="img-fluid d-block" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
+          <img id="receiptPhoto" class="img-fluid d-block" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
           <div class="card my-4">
             <div class="card-header">
               <div class="row">
@@ -92,7 +92,7 @@
                     <a href="#" class="btn btn-success btn-sm text-light" data-bind="click: $root.setTutti">Tutti</a>&nbsp
                     <div data-bind="foreach: $root.membri">
                       <a href="#" class="btn btn-primary btn-sm text-light" data-bind="text: name, style: {backgroundColor: color, borderColor: color}, click: function(data, event){ $root.changeAssignedPerson($data, $parent, event)}"></a>
-                    </div>                    
+                    </div>
                   </div>
                 </td>
               </tr>
