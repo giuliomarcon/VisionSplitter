@@ -46,12 +46,12 @@ function OggettoViewModel() {
         self.membri.push(new Membro("Nome", getRandomColor(), 0, 0));
         self.calcola();
     }
-    
+
     self.removeMembro = function(membro) { self.membri.remove(membro); self.calcola(); }
 
     self.removeKing = function(data,event) { self.dragging = data; }
 
-    self.setKing = function(data,event) { self.dragging.isKing(0); data.isKing(1); self.calcola();} 
+    self.setKing = function(data,event) { self.dragging.isKing(0); data.isKing(1); self.calcola();}
 
     self.dragging = "";
 
@@ -65,14 +65,14 @@ function OggettoViewModel() {
         self.oggetti.push(new Oggetto("Nome prodotto", 0, "Tutti" ));
         self.calcola();
     }
-    
+
     self.removeOggetto = function(oggetto) { self.oggetti.remove(oggetto); self.calcola(); }
 
-    self.changeAssignedPerson = function(membro,oggetto,event) { 
+    self.changeAssignedPerson = function(membro,oggetto,event) {
     	oggetto.person.remove("Tutti");
 
     	if (oggetto.person.indexOf(membro.name()) < 0) {
-    		oggetto.person.push(membro.name()); 
+    		oggetto.person.push(membro.name());
     		$(event.target).addClass("selected");
     	}
     	else {
@@ -83,10 +83,10 @@ function OggettoViewModel() {
     	self.calcola();
     }
 
-    self.setTutti = function(oggetto) { 
-    	oggetto.person = ko.observableArray(["Tutti"]); 
+    self.setTutti = function(oggetto) {
+    	oggetto.person = ko.observableArray(["Tutti"]);
     	$(".btn").removeClass("selected");
-    	self.calcola(); 
+    	self.calcola();
     }
 
     /* CALCOLI */
@@ -102,7 +102,7 @@ function OggettoViewModel() {
             ko.utils.arrayForEach(self.oggetti(), function(j) {
             	if (i.isKing() == 0) // se non è il king che ha pagato tutto
             	{
-            		if (j.person.indexOf(i.name()) != -1 || j.person.indexOf("Tutti") != -1) { // se l'oggetto è assegnato alla persona in considerazione oppure a tutti 
+            		if (j.person.indexOf(i.name()) != -1 || j.person.indexOf("Tutti") != -1) { // se l'oggetto è assegnato alla persona in considerazione oppure a tutti
             			var money = 0;
             			if (j.person.indexOf("Tutti") != -1)
             				money = parseFloat(j.price || 0) / parseFloat(self.membri().length);
@@ -112,14 +112,14 @@ function OggettoViewModel() {
             			tot_persona += money;
 
             			console.log("Persona: " + i.name() + " paga " + j.name + " " + money + " euri");
-            		} 
+            		}
             	}
         	});
 
             tot_persona = tot_persona || 0;
             i.money(tot_persona.toFixed(2));
-        	console.log("  TOTALE: " + tot_persona);     
-        });        
+        	console.log("  TOTALE: " + tot_persona);
+        });
     }
 
 }

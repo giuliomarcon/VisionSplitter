@@ -73,10 +73,8 @@ function printRow(rows){
   return result;
 }
 
-vision.documentTextDetection({ source: { filename: req.file.path } })
-  .then((results) => {
-    res.write('<img width="500" src="' + base64Image(req.file.path) + '"><br>');
-
+module.exports = {
+  analyzeReceipt: function (results) {
     // Salva ogni parola in formato stringa nel vettore words
     var words = [];
     for(var page of results[0].fullTextAnnotation.pages){
@@ -207,22 +205,14 @@ vision.documentTextDetection({ source: { filename: req.file.path } })
     if (found)
       final = final.slice(0, i);
 
+
     //Controllo consistenza dati
-    var json_export = printRow(final);
-
-    module.exports = {
-      foo: function () {
-        return printRow(final);
-      }
-    };
-
-    console.log(util.inspect(json_export, false, null));
     var checkSum = 0;
     for (var row of final) {
       checkSum = checkSum + row.price;
     }
     if (checkSum == total){
-        console.log("TOTALE ".padEnd(MAX_TITLE_SIZE) + total);
+      console.log("TOTALE ".padEnd(MAX_TITLE_SIZE) + total);
     }
     else {
       console.log("TOTALE RICONOSCIUTO ".padEnd(MAX_TITLE_SIZE) + total);
@@ -230,13 +220,11 @@ vision.documentTextDetection({ source: { filename: req.file.path } })
       console.log("\nDati non consistenti");
     }
 
+    return printRow(final);
+
     /*
     // Debug completo
     console.log(util.inspect(final, false, null));
     */
-
-    res.end('</body></html>');
-  })
-  .catch((err) => {
-    console.error('ERROR:', err);
-  });
+  }
+};

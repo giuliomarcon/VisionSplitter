@@ -6,9 +6,17 @@ var fs = require('fs');
 var util = require('util');
 var jsonfile = require('jsonfile');
 
+const Vision = require('@google-cloud/vision');
+const vision = new Vision();
+
+var bodyParser = require('body-parser');
+
+var parser = require('../libs/parsing.js');
+
 var fname = "";
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser());
 
 app.get('/', function(req, res){
   res.sendFile(path.join(__dirname, 'views/index.html'));
@@ -44,6 +52,20 @@ app.post('/upload', function(req, res){
 
   // parse the incoming request containing the form data
   form.parse(req);
+
+});
+
+app.post('/recognition', function(req, res){
+  console.log(req.body.image);
+
+  vision.documentTextDetection({ source: { filename: path.join("file-uploader-master/public/uploads/", req.body.image) } })
+    .then((results) => {
+        var out = parser.analyzeReceipt(results);
+        res.end(JSON.stringify(out));
+    })
+    .catch((err) => {
+      console.error('ERROR:', err);
+    });
 
 });
 

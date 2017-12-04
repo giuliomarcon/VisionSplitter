@@ -32,6 +32,13 @@ $('#upload_input').on('change', function()
         $("#bill_photo").fadeTo(1000, 0, function() {
           $("#bill_photo").attr("src","uploads/" + data);
           $("#bill_photo").fadeTo(1000, 1);
+          $.post("/recognition",{image: data}, function (data) {
+            console.log(data);
+            var jsonObj = $.parseJSON(data);
+            jsonObj.forEach(function(entry) {
+                
+            });
+          });
         });
 
         $("#progress_text").fadeOut(2000, function() {
