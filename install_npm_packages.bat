@@ -1,0 +1,10 @@
+cmd /c npm install express --save
+cmd /c npm install fs --save
+cmd /c npm install util --save
+cmd /c npm install mime --save
+cmd /c npm install multer --save
+cmd /c npm install path --save
+cmd /c npm install opn --save
+cmd /c npm install jsonfile --save
+cmd /c npm install formidable --save
+cmd /c npm install @google-cloud/vision --save

@@ -1,6 +1,3 @@
-var fs = require('fs');
-var util = require('util'); //per util.inspect
-var jsonfile = require('jsonfile');
 var levenshtein = require('./fast-levenshtein-master/levenshtein.js');
 
 const PIXEL_THRESHOLD = 5;
@@ -75,17 +72,14 @@ function printRow(rows){
   }
   return result;
 }
-/*
-fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
-    if (err){
-        console.log(err);
-    } else {
 
-    var json = JSON.parse(data);
+vision.documentTextDetection({ source: { filename: req.file.path } })
+  .then((results) => {
+    res.write('<img width="500" src="' + base64Image(req.file.path) + '"><br>');
 
     // Salva ogni parola in formato stringa nel vettore words
     var words = [];
-    for(var page of json[0].fullTextAnnotation.pages){
+    for(var page of results[0].fullTextAnnotation.pages){
       for(var block of page.blocks){
         for(var paragraph of block.paragraphs){
           for(var word of paragraph.words){
@@ -215,12 +209,14 @@ fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
 
     //Controllo consistenza dati
     var json_export = printRow(final);
+
     module.exports = {
       foo: function () {
         return printRow(final);
       }
     };
-    //console.log(util.inspect(json_export, false, null));
+
+    console.log(util.inspect(json_export, false, null));
     var checkSum = 0;
     for (var row of final) {
       checkSum = checkSum + row.price;
@@ -234,10 +230,13 @@ fs.readFile(JSON_FILE, 'utf8', function readFileCallback(err, data){
       console.log("\nDati non consistenti");
     }
 
-
+    /*
     // Debug completo
     console.log(util.inspect(final, false, null));
+    */
 
-
-}});
-*/
+    res.end('</body></html>');
+  })
+  .catch((err) => {
+    console.error('ERROR:', err);
+  });
