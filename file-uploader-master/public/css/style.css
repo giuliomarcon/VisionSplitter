@@ -5581,3 +5581,8 @@ body > * {
     top: 0px;
     pointer-events: none;
     background: linear-gradient(to top, #343a40 0%, transparent 100%); }
+
+input {
+  border:0px;
+  border-bottom: 1px solid grey;
+}

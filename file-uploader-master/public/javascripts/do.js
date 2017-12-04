@@ -34,6 +34,10 @@ function Membro(name, color, isKing, money) {
 function OggettoViewModel() {
     var self = this;
 
+    gigi = function() {
+        alert("asd");
+    }
+
     /* MEMBRO 8===D */
 
     // Editable data
@@ -61,8 +65,8 @@ function OggettoViewModel() {
     self.oggetti = ko.observableArray([]);
 
     // Operations
-    self.addOggetto = function() {
-        self.oggetti.push(new Oggetto("Nome prodotto", 0, "Tutti" ));
+    self.addOggetto = function(name = "Nome prodotto", price = 0) {
+        self.oggetti.push(new Oggetto(name, price, "Tutti" ));
         self.calcola();
     }
 
@@ -124,4 +128,5 @@ function OggettoViewModel() {
 
 }
 
-ko.applyBindings(new OggettoViewModel());
+var vm = new OggettoViewModel()
+ko.applyBindings(vm);

@@ -28,8 +28,3 @@
 .progress-bar-animated {
   animation: progress-bar-stripes 1s linear infinite; }
 }
-
-input {
-  border:0px;
-  border-bottom: 1px solid grey;
-}

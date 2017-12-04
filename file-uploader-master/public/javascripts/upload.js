@@ -1,5 +1,6 @@
 function select_file()
 {
+  $(".progress").fadeIn(1000);
   $('#upload_input').click();
   $('#progress_text').text('0%');
   $('.progress-bar').width('0%');
@@ -33,17 +34,24 @@ $('#upload_input').on('change', function()
           $("#bill_photo").attr("src","uploads/" + data);
           $("#bill_photo").fadeTo(1000, 1);
           $.post("/recognition",{image: data}, function (data) {
-            console.log(data);
+            vm.oggetti([]);
             var jsonObj = $.parseJSON(data);
             jsonObj.forEach(function(entry) {
-                
+              vm.addOggetto(entry.name,entry.price);
+            });
+
+            $('.progress-bar').width("100%");
+            $("#progress_text").fadeOut(2000, function() {
+              $('#progress_text').html('Magic done!');
+              $("#progress_text").fadeIn(500);
+              setTimeout(function() { $(".progress").fadeOut(1000); }, 3500); 
             });
           });
         });
 
         $("#progress_text").fadeOut(2000, function() {
           $('#progress_text').html('Upload done. Now doing the vision magic');
-          $("#progress_text").fadeIn(1000);
+          $("#progress_text").fadeIn(500);
         });
       },
       xhr: function() {
@@ -61,11 +69,6 @@ $('#upload_input').on('change', function()
             // update the Bootstrap progress bar with the new percentage
             $('#progress_text').text(percentComplete + '%');
             $('.progress-bar').width(percentComplete + '%');
-
-            if (percentComplete == 66)
-            {
-
-            }
           }
 
         }, false);

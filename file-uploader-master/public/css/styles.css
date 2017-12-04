@@ -67,3 +67,8 @@ h2 {
     width: 450px;
   }
 }
+
+input {
+  border:0px;
+  border-bottom: 1px solid grey;
+}
