@@ -1,3 +1,6 @@
+var colorList = ["ff5959","e46d89","ff59bb","bf59ff","7646ff","5965ff","599bff","59f1ff","59ff94","439245","aec512","ffc259","ff9b59","743939","923662","365292","368d92","889236","925036"];
+var color_index = -1;
+
 function getRandomColor() {
     var letters = '8BCDE'.split('');
     var color = '#';
@@ -7,13 +10,10 @@ function getRandomColor() {
     return color;
 }
 
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
+function getColor()
+{
+    color_index += 1;
+    return "#" + colorList[color_index];
 }
 
 function Oggetto(name, price, person) {
@@ -38,16 +38,16 @@ function OggettoViewModel() {
 
     // Editable data
     self.membri = ko.observableArray([
-        new Membro("King", getRandomColor(), 1, 0)
+        new Membro("King", getColor(), 1, 0)
     ]);
 
     // Operations
     self.addMembro = function() {
-        self.membri.push(new Membro("Nome", getRandomColor(), 0, 0));
+        self.membri.push(new Membro("Nome", getColor(), 0, 0));
         self.calcola();
     }
 
-    self.removeMembro = function(membro) { self.membri.remove(membro); self.calcola(); }
+    self.removeMembro = function(membro) { self.membri.remove(membro); color_index-=1; self.calcola(); }
 
     self.removeKing = function(data,event) { self.dragging = data; }
 
@@ -63,7 +63,7 @@ function OggettoViewModel() {
 
     // Operations
     self.addOggetto = function(name = "Nome prodotto", price = 0) {
-        self.oggetti.push(new Oggetto(name, price, "Tutti" ));
+        self.oggetti.push(new Oggetto(name, price.toFixed(2), "Tutti" ));
         self.calcola();
     }
 

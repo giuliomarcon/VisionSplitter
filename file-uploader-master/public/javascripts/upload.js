@@ -92,7 +92,7 @@ function upload(files)
               $("#progress_text").fadeIn(500);
               setTimeout(function() { 
                 $("#progress_text").fadeOut(500, function () {
-                  $("#progress_text").html("Click the image to upload another bill");
+                  $("#progress_text").html("Click or drag n drop the image to upload another bill");
                   $("#progress_text").fadeIn(500);
                 });
               }, 3000); 

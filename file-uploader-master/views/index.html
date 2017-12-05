@@ -35,7 +35,9 @@
                         <h4 style="margin-top: 3px; margin-bottom: 0">Membri</h4>
                     </div>
                     <div class="col-md-6">
-                        <a href="#" class="btn pull-right btn-sm btn-outline-secondary" data-bind="click: addMembro">Aggiungi membro</a>
+                        <span data-bind="if: membri().length < 19">
+                          <a href="#" class="btn pull-right btn-sm btn-outline-secondary" data-bind="click: addMembro">Aggiungi membro</a>
+                        </span>
                     </div>
                 </div>
             </div>
