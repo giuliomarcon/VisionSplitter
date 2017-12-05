@@ -35,7 +35,9 @@
                         <h4 style="margin-top: 3px; margin-bottom: 0">Membri</h4>
                     </div>
                     <div class="col-md-6">
-                        <a href="#" class="btn pull-right btn-sm btn-outline-secondary" data-bind="click: addMembro">Aggiungi membro</a>
+                        <span data-bind="if: membri().length < 19">
+                          <a href="#" class="btn pull-right btn-sm btn-outline-secondary" data-bind="click: addMembro">Aggiungi membro</a>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -78,36 +80,38 @@
                 <br> </a>
             </div>
           </div>
-          <table class="table" id="main_table">
-            <thead>
-              <tr>
-                <th>Prodotti</th>
-                <th>Prezzo</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody data-bind="foreach: oggetti">
-              <tr>
-                <td><input data-bind="value: name" /></td>
-                <td><input data-bind="value: price, valueUpdate:'afterkeydown', event: { 'keyup': $root.calcola }" /></td>
-                <td>
-                  <a href="#" class="btn btn-danger btn-sm text-light pull-right" style="margin-left: 5px" data-bind="click: $root.removeOggetto"><i class="fa fa-lg fa-times"></i></a>
-                  <div id="c_btn-group" class="pi-draggable btn-group pull-right" draggable="true">
-                    <a href="#" class="btn btn-success btn-sm text-light" data-bind="click: $root.setTutti">Tutti</a>&nbsp
-                    <div data-bind="foreach: $root.membri">
-                      <a href="#" class="btn btn-primary btn-sm text-light" data-bind="text: name, style: {backgroundColor: color, borderColor: color}, click: function(data, event){ $root.changeAssignedPerson($data, $parent, event)}"></a>
-                    </div>                    
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-            <tfoot data-bind="if: oggetti().length > 0">
-              <tr>
-                <th>Somma</th>
-                <th data-bind="text: $root.total"></th>
-              </tr>
-            </tfoot>
-          </table>
+          <div class="table-responsive">
+            <table class="table" id="main_table">
+              <thead>
+                <tr>
+                  <th>Prodotti</th>
+                  <th>Prezzo</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody data-bind="foreach: oggetti">
+                <tr>
+                  <td><input data-bind="value: name" /></td>
+                  <td><input data-bind="value: price, valueUpdate:'afterkeydown', event: { 'keyup': $root.calcola }" /></td>
+                  <td>
+                    <a href="#" class="btn btn-danger btn-sm text-light pull-right" style="margin-left: 5px" data-bind="click: $root.removeOggetto"><i class="fa fa-lg fa-times"></i></a>
+                    <div id="c_btn-group" class="pi-draggable btn-group pull-right" draggable="true">
+                      <a href="#" class="btn btn-success btn-sm text-light" data-bind="click: $root.setTutti">Tutti</a>&nbsp
+                      <div data-bind="foreach: $root.membri">
+                        <a href="#" class="btn btn-primary btn-sm text-light" data-bind="text: name, style: {backgroundColor: color, borderColor: color}, click: function(data, event){ $root.changeAssignedPerson($data, $parent, event)}"></a>
+                      </div>                    
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot data-bind="if: oggetti().length > 0">
+                <tr>
+                  <th>Somma</th>
+                  <th data-bind="text: $root.total"></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
           </div>
         </div>
       </div>
