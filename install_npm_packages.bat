@@ -7,4 +7,5 @@ cmd /c npm install path --save
 cmd /c npm install opn --save
 cmd /c npm install jsonfile --save
 cmd /c npm install formidable --save
-cmd /c npm install @google-cloud/vision --save
+cmd /c npm install opn --save
+cmd /c npm install @google-cloud/vision@0.13.0 --save
