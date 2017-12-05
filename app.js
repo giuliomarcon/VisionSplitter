@@ -59,10 +59,14 @@ app.post('/upload', function(req, res){
 });
 
 app.post('/recognition', function(req, res){
-  client.documentTextDetection(path.join("public/uploads/", req.body.image))
+  var img_path = path.join("public/uploads/", req.body.image);
+  client.documentTextDetection(img_path)
     .then((results) => {
-        fs.writeFile('assets/json/'+new Date().getTime()+'.json', results, 'utf8', function(){});
-        var out = parser.analyzeReceipt(results);
+      var filename = new Date().getTime();
+        fs.writeFile('assets/json/'+filename+'.json', results, 'utf8', function(){
+          console.log('assets/json/'+filename+'.json');
+        });
+        //var out = parser.analyzeReceipt(results);
         res.end(JSON.stringify(out));
     })
     .catch((err) => {
