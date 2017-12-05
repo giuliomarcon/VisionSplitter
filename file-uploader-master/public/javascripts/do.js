@@ -34,10 +34,6 @@ function Membro(name, color, isKing, money) {
 function OggettoViewModel() {
     var self = this;
 
-    gigi = function() {
-        alert("asd");
-    }
-
     /* MEMBRO 8===D */
 
     // Editable data
@@ -63,6 +59,7 @@ function OggettoViewModel() {
 
     // Editable data
     self.oggetti = ko.observableArray([]);
+    self.total = ko.observable("");
 
     // Operations
     self.addOggetto = function(name = "Nome prodotto", price = 0) {
@@ -70,7 +67,17 @@ function OggettoViewModel() {
         self.calcola();
     }
 
+    self.addOggettoWrapper = function() { self.addOggetto(); }
+
     self.removeOggetto = function(oggetto) { self.oggetti.remove(oggetto); self.calcola(); }
+
+    self.computeTotal = function() {
+        var sum = 0;
+        self.oggetti().forEach(function(item) {
+            sum += parseFloat(item.price || 0);
+        });
+        self.total(sum.toFixed(2));
+    }
 
     self.changeAssignedPerson = function(membro,oggetto,event) {
     	oggetto.person.remove("Tutti");
@@ -96,6 +103,8 @@ function OggettoViewModel() {
     /* CALCOLI */
 
     self.calcola = function(oggetto) {
+        self.computeTotal();
+
     	var total = 0;
         ko.utils.arrayForEach(self.oggetti(), function(feature) {
             total += parseFloat(feature.price);
@@ -115,14 +124,14 @@ function OggettoViewModel() {
 
             			tot_persona += money;
 
-            			console.log("Persona: " + i.name() + " paga " + j.name + " " + money + " euri");
+            			//console.log("Persona: " + i.name() + " paga " + j.name + " " + money + " euri");
             		}
             	}
         	});
 
             tot_persona = tot_persona || 0;
             i.money(tot_persona.toFixed(2));
-        	console.log("  TOTALE: " + tot_persona);
+        	//console.log("  TOTALE: " + tot_persona);
         });
     }
 
