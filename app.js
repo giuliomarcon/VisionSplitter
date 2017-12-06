@@ -1,46 +1,81 @@
+const PORT = 1337;
+
 var express = require('express');
+var app = express();
 var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+var formidable = require('formidable');
+var fs = require('fs');
+var util = require('util');
+var jsonfile = require('jsonfile');
+var opn = require('opn');
+
+const vision = require('@google-cloud/vision');
+const client = new vision.ImageAnnotatorClient();
+
 var bodyParser = require('body-parser');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+var parser = require('./lib/parsing.js');
 
-var app = express();
+var fname = "";
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser());
 
-app.use('/', index);
-app.use('/users', users);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.get('/', function(req, res){
+  res.sendFile(path.join(__dirname, 'views/index.html'));
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.post('/upload', function(req, res){
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  // create an incoming form object
+  var form = new formidable.IncomingForm();
+
+  // specify that we want to allow the user to upload multiple files in a single request
+  form.multiples = true;
+
+  // store all uploads in the /uploads directory
+  form.uploadDir = path.join(__dirname, '/public/uploads');
+
+  // every time a file has been uploaded successfully,
+  // rename it to it's orignal name
+  form.on('file', function(field, file) {
+    fs.rename(file.path, path.join(form.uploadDir, file.name));
+    fname = file.name;
+  });
+
+  // log any errors that occur
+  form.on('error', function(err) {
+    console.log('An error has occured: \n' + err);
+  });
+
+  // once all the files have been uploaded, send a response to the client
+  form.on('end', function() {
+    res.end(fname);
+  });
+
+  // parse the incoming request containing the form data
+  form.parse(req);
+
 });
 
-module.exports = app;
+app.post('/recognition', function(req, res){
+  var img_path = path.join("public/uploads/", req.body.image);
+  client.documentTextDetection(img_path)
+    .then((results) => {
+      var filename = new Date().getTime();
+        fs.writeFile('assets/json/'+filename+'.json', results, 'utf8', function(){
+          console.log('assets/json/'+filename+'.json');
+        });
+        //var out = parser.analyzeReceipt(results);
+        res.end(JSON.stringify(out));
+    })
+    .catch((err) => {
+      console.error('ERROR:', err);
+    });
+
+});
+
+var server = app.listen(PORT, function(){
+  console.log('Server listening on port '+PORT);
+  opn('http://localhost:'+PORT+'/', {app: ['chrome', '--incognito']});
+});
