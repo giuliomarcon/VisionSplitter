@@ -11,12 +11,6 @@
   <nav class="navbar navbar-expand-md sticky-top navbar-dark bg-primary">
     <div class="container-fluid">
       <a class="navbar-brand" href="#"><i class="fa d-inline fa-lg fa-cloud"></i><b>&nbsp;VisionSplitter.io</b></a>
-      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar2SupportedContent" aria-controls="navbar2SupportedContent"
-        aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
-      <div class="collapse navbar-collapse text-center justify-content-end" id="navbar2SupportedContent">
-        <ul class="navbar-nav"></ul>
-        <a class="btn navbar-btn ml-2 text-dark btn-light"><i class="fa d-inline fa-lg fa-user-circle-o"></i> Sign in</a>
-      </div>
     </div>
   </nav>
   <div class="py-3">
@@ -31,11 +25,11 @@
           <div class="card my-4">
             <div class="card-header">
               <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-6">
                         <h4 style="margin-top: 3px; margin-bottom: 0">Membri</h4>
                     </div>
-                    <div class="col-md-6">
-                        <span data-bind="if: membri().length < 19">
+                    <div class="col-6">
+                        <span data-bind="if: membri().length < colorList.length">
                           <a href="#" class="btn pull-right btn-sm btn-outline-secondary" data-bind="click: addMembro">Aggiungi membro</a>
                         </span>
                     </div>
@@ -44,7 +38,7 @@
             <div class="card-body">
               <div data-bind="foreach: membri">
                 <div class="row" data-bind="drop: function(data, event){ $root.setKing($data, event)}">
-                  <div class="col-md-7">
+                  <div class="col-md-8">
                     <h4>
                       <span data-bind="if: isKing() == 1">
                         <img src="assets/chess.png" width="23px" height="23px" style="margin-bottom:5px; cursor: move" data-bind="drag: function(data, event){ $root.removeKing($data, event)}"/>
@@ -55,7 +49,7 @@
                       &nbsp
                       <i class="fa d-inline fa-circle" data-bind="style: {color: color}"></i>&nbsp&nbsp<input style="width:70%" data-bind="textInput: name, value: name" /> </h4>
                   </div>
-                  <div class="col-md-5">
+                  <div class="col-md-4">
                     <div class="row">
                       <div class="col-md-8">
                         <p id="c_lead" class="lead pi-draggable text-muted text-center" data-bind="if: isKing() == 0">+ <span data-bind="text: money"></span> €</p>
@@ -72,11 +66,11 @@
         </div>
         <div class="col-md-8">
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-6">
               <h2 class="">Lista della spesa </h2>
             </div>
-            <div class="col-md-6">
-              <a class="btn pull-right btn-outline-secondary" href="#" data-bind="click: addOggettoWrapper">Aggiungi prodotto
+            <div class="col-6">
+              <a class="btn pull-right btn-sm btn-outline-secondary" href="#" data-bind="click: addOggettoWrapper">Aggiungi prodotto
                 <br> </a>
             </div>
           </div>
