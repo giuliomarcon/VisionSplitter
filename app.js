@@ -1,4 +1,4 @@
-const PORT = 1337;
+const PORT = process.env.PORT || 5000;
 
 var express = require('express');
 var app = express();
@@ -59,14 +59,10 @@ app.post('/upload', function(req, res){
 });
 
 app.post('/recognition', function(req, res){
-  var img_path = path.join("public/uploads/", req.body.image);
-  client.documentTextDetection(img_path)
+  client.documentTextDetection(path.join("public/uploads/", req.body.image))
     .then((results) => {
-      var filename = new Date().getTime();
-        fs.writeFile('assets/json/'+filename+'.json', results, 'utf8', function(){
-          console.log('assets/json/'+filename+'.json');
-        });
-        //var out = parser.analyzeReceipt(results);
+        fs.writeFile('assets/json/'+new Date().getTime()+'.json', results, 'utf8', function(){});
+        var out = parser.analyzeReceipt(results);
         res.end(JSON.stringify(out));
     })
     .catch((err) => {
@@ -77,5 +73,4 @@ app.post('/recognition', function(req, res){
 
 var server = app.listen(PORT, function(){
   console.log('Server listening on port '+PORT);
-  opn('http://localhost:'+PORT+'/', {app: ['chrome', '--incognito']});
 });
