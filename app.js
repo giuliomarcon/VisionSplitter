@@ -61,7 +61,9 @@ app.post('/upload', function(req, res){
 app.post('/recognition', function(req, res){
   client.documentTextDetection(path.join("public/uploads/", req.body.image))
     .then((results) => {
-        fs.writeFile('assets/json/'+new Date().getTime()+'.json', results, 'utf8', function(){});
+        var _time = new Date().getTime();
+        fs.writeFile('./assets/'+_time+'.json', JSON.stringify(results), 'utf8', function(){});
+        console.log('Salvato in ./assets/'+_time+'.json');
         var out = parser.analyzeReceipt(results);
         res.end(JSON.stringify(out));
     })
