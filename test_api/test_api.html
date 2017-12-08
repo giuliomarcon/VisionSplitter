@@ -1,0 +1,61 @@
+<head>
+</head>
+<body>
+	<input name="myFile" type="file" id="myFile">
+    <hr>
+    <button onclick="splitta()">vai</button>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <script>
+    	$('#myFile').change(function()
+    	{
+            var files = $("#myFile").get(0).files;
+    		var formData = new FormData();
+
+            // loop through all the selected files and add them to the formData object
+            for (var i = 0; i < files.length; i++) {
+              var file = files[i];
+
+              // add the files to formData object for the data payload
+              formData.append('uploads[]', file, file.name);
+            }
+
+            $.ajax({
+              url: 'http://localhost:5000/api/recognition',
+              type: 'POST',
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function(data){
+                  console.log('upload successful!\n' + data);
+              },
+              xhr: function() {
+                // create an XMLHttpRequest
+                var xhr = new XMLHttpRequest();
+                return xhr;
+              }
+            });
+    	});
+
+        function splitta()
+        {
+            var oggetti = [ { name: "pasta", price: 4, person: ["Tutti"] },
+                            { name: "tonno", price: 3, person: ["alex","martino"] },
+                            { name: "cavallo", price: 2, person: ["Tutti"] } 
+                          ];
+
+            var membri = [ { name: "king", isking: 1 },
+                           { name: "alex", isking: 0 },
+                           { name: "martino", isking: 0},
+                           { name: "cresta", isking: 0} 
+                         ];
+
+            var oggetti_s = JSON.stringify(oggetti);
+            var membri_s = JSON.stringify(membri);
+
+            $.post("http://localhost:5000/api/split", { oggetti: oggetti_s, membri: membri_s } );
+
+        }
+    </script>
+</body>
