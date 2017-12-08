@@ -13,10 +13,17 @@ const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient();
 
 var bodyParser = require('body-parser');
-
 var parser = require('./lib/parsing.js');
 
 var fname = "";
+/*
+fs.readFile('./assets/json/1512666588645.json', 'utf8', function (err, data) {
+    if (err)
+      throw err;
+
+    var results = JSON.parse(data);
+    parser.analyzeReceipt(results);
+});*/
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser());
@@ -59,18 +66,20 @@ app.post('/upload', function(req, res){
 });
 
 app.post('/recognition', function(req, res){
-  client.documentTextDetection(path.join("public/uploads/", req.body.image))
+  var relativeImagePath = path.join("public/uploads/", req.body.image);
+  console.log('Image saved in '+relativeImagePath);
+  client.documentTextDetection(relativeImagePath)
     .then((results) => {
-        var _time = new Date().getTime();
-        fs.writeFile('./assets/'+_time+'.json', JSON.stringify(results), 'utf8', function(){});
-        console.log('Salvato in ./assets/'+_time+'.json');
-        var out = parser.analyzeReceipt(results);
+        var currentTime = new Date().getTime();
+        var relativeJsonPath = path.join('assets/', currentTime+'.json');
+        fs.writeFile(relativeJsonPath ,JSON.stringify(results), 'utf8', function(){});
+        console.log('Json saved in ' + relativeJsonPath);
+        var out = parser.analyzeReceipt(results, relativeImagePath, relativeJsonPath);
         res.end(JSON.stringify(out));
     })
     .catch((err) => {
       console.error('ERROR:', err);
     });
-
 });
 
 var server = app.listen(PORT, function(){

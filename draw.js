@@ -7,12 +7,11 @@ const { registerFont, createCanvas, loadImage } = require('canvas')
 registerFont('./assets/Roboto-Bold.ttf', {family: 'My Font'});
 
 // Draw cat with lime helmet
-loadImage('./public/uploads/sconto.jpg').then((image) => {
+loadImage('./public/uploads/WhatsApp Image 2017-12-05 at 18.22.01(1).jpeg').then((image) => {
 
-  fs.readFile('./assets/1512661714002.json', 'utf8', function (err, data) {
+  fs.readFile('./assets/json/1512666588645.json', 'utf8', function (err, data) {
       if (err)
         throw err;
-
 
       var results = JSON.parse(data);
 
@@ -23,7 +22,7 @@ loadImage('./public/uploads/sconto.jpg').then((image) => {
 
       ctx.drawImage(image, 0, 0, image.width, image.height)
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
+      ctx.fillStyle = 'rgba(255, 255, 255, 1)'
       ctx.shadowColor='rgba(0, 0, 0, 0.4)';
       ctx.lineWidth = 1;
       ctx.strokeStyle = 'red'
@@ -56,64 +55,7 @@ loadImage('./public/uploads/sconto.jpg').then((image) => {
         }
 
       }
-
-
-
-      //console.log('<img src="' + canvas.toDataURL() + '" />')
       fs.writeFile('file.jpg', canvas.toBuffer());
   });
 
-
-  //console.log('<img src="' + canvas.toDataURL() + '" />')
 })
-/*
-// Draw cat with lime helmet
-loadImage('./assets/receipts/sconto.jpg').then((image) => {
-
-
-});
-*/
-
-
-
-
-/*
-
-foreach($risposta['responses'][0]['textAnnotations'] as $box){
-
-  $punti = array();
-
-  foreach($box['boundingPoly']['vertices'] as $vertice){
-    array_push($punti, $vertice['x'], $vertice['y']);
-    }
-
-  imagesetthickness($im, 6);
-  imagepolygon($im, $punti, count($box['boundingPoly']['vertices']), $rosso);
-
-  }
-
-  */
-
-/*
-loadImage('./assets/receipts/sconto.jpg').then((image) => {
-  fs.readFile('./assets/json/1512510353341.json', 'utf8', function (err, data) {
-      if (err)
-        throw err;
-  });
-});
-*/
-
-
-
-
-/*
-C:\Users\tron\Documents\GitHub\VisionSplitter>node draw.js
-undefined:1
-[object Object]
- ^
-
-SyntaxError: Unexpected token o in JSON at position 1
-    at JSON.parse (<anonymous>)
-    at C:\Users\tron\Documents\GitHub\VisionSplitter\draw.js:7:22
-    at FSReqWrap.readFileAfterClose [as oncomplete] (fs.js:528:3)
-*/
