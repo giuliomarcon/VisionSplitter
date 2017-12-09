@@ -1,5 +1,15 @@
 var colorList = ["ff5959","e46d89","ff59bb","bf59ff","7646ff","5965ff","599bff","59f1ff","59ff94","439245","aec512","ffc259","ff9b59","743939","923662","365292","368d92","889236","925036"];
 var color_index = -1;
+var row_id = -1;
+
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
 
 function getRandomColor() {
     var letters = '8BCDE'.split('');
@@ -16,11 +26,13 @@ function getColor()
     return "#" + colorList[color_index];
 }
 
-function Oggetto(name, price, person) {
+function Oggetto(row_id, name, price, person, tutti_sel) {
     var self = this;
+    self.row_id = row_id;
     self.name = name;
     self.price = price;
     self.person = ko.observableArray([person]);
+    self.tutti_sel = ko.observable(tutti_sel);
 }
 
 function Membro(name, color, isKing, money) {
@@ -47,7 +59,7 @@ function OggettoViewModel() {
         self.calcola();
     }
 
-    self.removeMembro = function(membro) { self.membri.remove(membro); color_index-=1; self.calcola(); }
+    self.removeMembro = function(membro) { self.membri.remove(membro); color_index-=1; row_id-=1; self.calcola(); }
 
     self.removeKing = function(data,event) { self.dragging = data; }
 
@@ -63,7 +75,8 @@ function OggettoViewModel() {
 
     // Operations
     self.addOggetto = function(name = "Nome prodotto", price = 0) {
-        self.oggetti.push(new Oggetto(name, parseFloat(price).toFixed(2), "Tutti" ));
+        row_id += 1;
+        self.oggetti.push(new Oggetto(row_id, name, parseFloat(price).toFixed(2), "Tutti", 1));
         self.calcola();
     }
 
@@ -81,22 +94,33 @@ function OggettoViewModel() {
 
     self.changeAssignedPerson = function(membro,oggetto,event) {
     	oggetto.person.remove("Tutti");
+        oggetto.tutti_sel(0);
 
-    	if (oggetto.person.indexOf(membro.name()) < 0) {
-    		oggetto.person.push(membro.name());
-    		$(event.target).addClass("selected");
+    	if (oggetto.person.indexOf(membro.color) < 0) {
+    		oggetto.person.push(membro.color);
+            var rgb = hexToRgb(membro.color);
+            $(event.target).css("box-shadow","0 0 0 3px rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", 0.5)");
+            $(event.target).addClass("rid_" + oggetto.row_id);
     	}
     	else {
-    		oggetto.person.remove(membro.name());
-    		$(event.target).removeClass("selected");
+    		oggetto.person.remove(membro.color);
+    		$(event.target).css("box-shadow","none");
+            $(event.target).removeClass("rid_" + oggetto.row_id);
+
+            if (oggetto.person().length == 0)
+                self.setTutti(oggetto);
     	}
 
     	self.calcola();
     }
 
     self.setTutti = function(oggetto) {
+        oggetto.tutti_sel(1);
     	oggetto.person = ko.observableArray(["Tutti"]);
-    	$(".btn").removeClass("selected");
+        var rid = oggetto.row_id;
+    	$(".rid_"+rid).css("box-shadow","none");
+
+
     	self.calcola();
     }
 
@@ -115,7 +139,7 @@ function OggettoViewModel() {
             ko.utils.arrayForEach(self.oggetti(), function(j) {
             	if (i.isKing() == 0) // se non è il king che ha pagato tutto
             	{
-            		if (j.person.indexOf(i.name()) != -1 || j.person.indexOf("Tutti") != -1) { // se l'oggetto è assegnato alla persona in considerazione oppure a tutti
+            		if (j.person.indexOf(i.color) != -1 || j.person.indexOf("Tutti") != -1) { // se l'oggetto è assegnato alla persona in considerazione oppure a tutti
             			var money = 0;
             			if (j.person.indexOf("Tutti") != -1)
             				money = parseFloat(j.price || 0) / parseFloat(self.membri().length);
