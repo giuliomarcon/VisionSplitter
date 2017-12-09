@@ -82,12 +82,12 @@ function OggettoViewModel() {
     self.changeAssignedPerson = function(membro,oggetto,event) {
     	oggetto.person.remove("Tutti");
 
-    	if (oggetto.person.indexOf(membro.name()) < 0) {
-    		oggetto.person.push(membro.name());
+    	if (oggetto.person.indexOf(membro.color) < 0) {
+    		oggetto.person.push(membro.color);
     		$(event.target).addClass("selected");
     	}
     	else {
-    		oggetto.person.remove(membro.name());
+    		oggetto.person.remove(membro.color);
     		$(event.target).removeClass("selected");
     	}
 
@@ -115,7 +115,7 @@ function OggettoViewModel() {
             ko.utils.arrayForEach(self.oggetti(), function(j) {
             	if (i.isKing() == 0) // se non è il king che ha pagato tutto
             	{
-            		if (j.person.indexOf(i.name()) != -1 || j.person.indexOf("Tutti") != -1) { // se l'oggetto è assegnato alla persona in considerazione oppure a tutti
+            		if (j.person.indexOf(i.color) != -1 || j.person.indexOf("Tutti") != -1) { // se l'oggetto è assegnato alla persona in considerazione oppure a tutti
             			var money = 0;
             			if (j.person.indexOf("Tutti") != -1)
             				money = parseFloat(j.price || 0) / parseFloat(self.membri().length);
