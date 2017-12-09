@@ -89,7 +89,12 @@
                 <td>
                   <a href="#" class="btn btn-danger btn-sm text-light pull-right" style="margin-left: 5px" data-bind="click: $root.removeOggetto"><i class="fa fa-lg fa-times"></i></a>
                   <div id="c_btn-group" class="pi-draggable btn-group pull-right" draggable="true">
-                    <a href="#" class="btn btn-success btn-sm text-light" data-bind="click: $root.setTutti">Tutti</a>&nbsp
+                    <span data-bind="if: tutti_sel() == 1">
+                      <a href="#" class="btn btn-success btn-sm text-light" data-bind="click: $root.setTutti" style="box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);">Tutti</a>&nbsp
+                    </span>
+                    <span data-bind="if: tutti_sel() == 0">
+                      <a href="#" class="btn btn-success btn-sm text-light" data-bind="click: $root.setTutti">Tutti</a>&nbsp
+                    </span>
                     <div data-bind="foreach: $root.membri">
                       <a href="#" class="btn btn-primary btn-sm text-light" data-bind="text: name, style: {backgroundColor: color, borderColor: color}, click: function(data, event){ $root.changeAssignedPerson($data, $parent, event)}"></a>
                     </div>                    
