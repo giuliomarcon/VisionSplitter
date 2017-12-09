@@ -1,13 +1,18 @@
 <head>
 </head>
 <body>
-	<input name="myFile" type="file" id="myFile">
+    <b>Bill recognition api</b>
+    <br>
+	  <input name="myFile" type="file" id="myFile">
     <hr>
-    <button onclick="splitta()">vai</button>
+    <button onclick="splitta()">Split api</button>
 
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
     <script>
+      var endpoint = 'http://visionsplitter.herokuapp.com/';
+      //var endpoint = 'http://localhost:5000/'
+
     	$('#myFile').change(function()
     	{
             var files = $("#myFile").get(0).files;
@@ -22,7 +27,7 @@
             }
 
             $.ajax({
-              url: 'http://localhost:5000/api/recognition',
+              url: endpoint + 'api/recognition',
               type: 'POST',
               data: formData,
               processData: false,
@@ -54,7 +59,7 @@
             var oggetti_s = JSON.stringify(oggetti);
             var membri_s = JSON.stringify(membri);
 
-            $.post("http://localhost:5000/api/split", { oggetti: oggetti_s, membri: membri_s } );
+            $.post(endpoint + "api/split", { oggetti: oggetti_s, membri: membri_s } );
 
         }
     </script>
