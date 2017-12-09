@@ -8,6 +8,7 @@ var fs = require('fs');
 var util = require('util');
 var jsonfile = require('jsonfile');
 var opn = require('opn');
+var Jimp = require("jimp");
 
 const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient();
@@ -17,6 +18,7 @@ var bodyParser = require('body-parser');
 var parser = require('./lib/parsing.js');
 
 var fname = "";
+var fpath = "";
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser());
@@ -38,7 +40,9 @@ app.post('/upload', function(req, res){
   // every time a file has been uploaded successfully,
   // rename it to it's orignal name
   form.on('file', function(field, file) {
-    fs.rename(file.path, path.join(form.uploadDir, file.name));
+    fpath = path.join(form.uploadDir, file.name);
+    fs.rename(file.path, fpath);
+
     fname = file.name;
   });
 
@@ -49,7 +53,15 @@ app.post('/upload', function(req, res){
 
   // once all the files have been uploaded, send a response to the clientx  
   form.on('end', function() {
+    // resize
+    Jimp.read(fpath, function (err, img) {
+    if (err) throw err;
+    img.resize(720, Jimp.AUTO)            // resize
+        .quality(100)                 // set JPEG quality
+        .write(fpath); // save
+    
     res.end(fname);
+    });    
   });
 
   // parse the incoming request containing the form data
