@@ -8,9 +8,10 @@
   "dependencies": {
     "@google-cloud/vision": "^0.13.0",
     "body-parser": "~1.18.2",
+    "canvas": "^2.0.0-alpha.7",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
-    "express": "^4.15.5",
+    "express": "^4.16.2",
     "formidable": "^1.1.1",
     "fs": "0.0.1-security",
     "jade": "~1.11.0",
