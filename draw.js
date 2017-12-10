@@ -3,13 +3,13 @@ var util = require('util');
 var jsonfile = require('jsonfile');
 var path = require('path');
 
-const { registerFont, createCanvas, loadImage } = require('canvas')
+const { registerFont, createCanvas, loadImage } = require('./lib/canvas')
 registerFont('./assets/Roboto-Bold.ttf', {family: 'My Font'});
 
 // Draw cat with lime helmet
-loadImage('./public/uploads/WhatsApp Image 2017-12-05 at 18.22.01(1).jpeg').then((image) => {
+loadImage('./public/uploads/scontrino-negozio-via-cironi.jpg').then((image) => {
 
-  fs.readFile('./assets/json/1512666588645.json', 'utf8', function (err, data) {
+  fs.readFile('./assets/1512921860007.json', 'utf8', function (err, data) {
       if (err)
         throw err;
 

@@ -1,3 +1,4 @@
+//process.env.NODE_DEBUG = 'fs';
 const PORT = process.env.PORT || 5000;
 
 var express = require('express');
@@ -49,7 +50,7 @@ app.post('/upload', function(req, res){
     console.log('An error has occured: \n' + err);
   });
 
-  // once all the files have been uploaded, send a response to the clientx  
+  // once all the files have been uploaded, send a response to the clientx
   form.on('end', function() {
     // resize
     Jimp.read(fpath, function (err, img) {
@@ -57,9 +58,9 @@ app.post('/upload', function(req, res){
     img.resize(720, Jimp.AUTO)            // resize
         .quality(100)                 // set JPEG quality
         .write(fpath); // save
-    
+
     res.end(fname);
-    });    
+    });
   });
 
   // parse the incoming request containing the form data
@@ -69,16 +70,17 @@ app.post('/upload', function(req, res){
 
 app.post('/recognition', function(req, res){
   var relativeImagePath = path.join("public/uploads/", req.body.image);
-  console.log('Image saved in '+relativeImagePath);
   client.documentTextDetection(relativeImagePath)
     .then((results) => {
+
         var currentTime = new Date().getTime();
         var relativeJsonPath = path.join('assets/', currentTime+'.json');
-        fs.writeFile(relativeJsonPath ,JSON.stringify(results), 'utf8', function(){});
-        console.log('Json saved in ' + relativeJsonPath);
+        fs.writeFile(relativeJsonPath ,JSON.stringify(results), 'utf8', function(){
+          console.log('Json saved in ' + relativeJsonPath);
+        });
         var out = parser.analyzeReceipt(results, relativeImagePath, relativeJsonPath);
+        fs.unlinkSync(relativeImagePath);
         res.end(JSON.stringify(out));
-        fs.unlinkSync(filepath);
     })
     .catch((err) => {
       console.error('ERROR:', err);
@@ -86,7 +88,7 @@ app.post('/recognition', function(req, res){
 });
 
 app.post('/api/recognition', function(req, res){
-  
+
   // upload
   var form = new formidable.IncomingForm();
   form.multiples = true;
@@ -112,7 +114,7 @@ app.post('/api/recognition', function(req, res){
       })
       .catch((err) => {
         console.error('ERROR:', err);
-      });    
+      });
 
   });
 
