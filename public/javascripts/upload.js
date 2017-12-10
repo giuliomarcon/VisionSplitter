@@ -66,7 +66,7 @@ function upload(files)
       // add the files to formData object for the data payload
       formData.append('uploads[]', file, file.name);
     }
-
+    
     $.ajax({
       url: '/upload',
       type: 'POST',
