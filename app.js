@@ -14,11 +14,9 @@ const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient();
 
 var bodyParser = require('body-parser');
-
 var parser = require('./lib/parsing.js');
 
 var fname = "";
-var fpath = "";
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser());
@@ -70,18 +68,21 @@ app.post('/upload', function(req, res){
 });
 
 app.post('/recognition', function(req, res){
-  var filepath = path.join("public/uploads/", req.body.image);
-  client.documentTextDetection(filepath)
+  var relativeImagePath = path.join("public/uploads/", req.body.image);
+  console.log('Image saved in '+relativeImagePath);
+  client.documentTextDetection(relativeImagePath)
     .then((results) => {
-        fs.writeFile('assets/json/'+new Date().getTime()+'.json', results, 'utf8', function(){});
-        var out = parser.analyzeReceipt(results);
+        var currentTime = new Date().getTime();
+        var relativeJsonPath = path.join('assets/', currentTime+'.json');
+        fs.writeFile(relativeJsonPath ,JSON.stringify(results), 'utf8', function(){});
+        console.log('Json saved in ' + relativeJsonPath);
+        var out = parser.analyzeReceipt(results, relativeImagePath, relativeJsonPath);
         res.end(JSON.stringify(out));
         fs.unlinkSync(filepath);
     })
     .catch((err) => {
       console.error('ERROR:', err);
     });
-
 });
 
 app.post('/api/recognition', function(req, res){
