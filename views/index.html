@@ -44,7 +44,7 @@
                         <img src="assets/chess.png" width="23px" height="23px" style="margin-bottom:5px; cursor: move" data-bind="drag: function(data, event){ $root.removeKing($data, event)}"/>
                       </span>
                       <span data-bind="if: isKing() == 0">
-                        <img src="assets/chess.png" width="23px" height="23px" style="margin-bottom:5px; opacity:0.45; filter:grayscale(100%);"/>
+                        <img src="assets/chess.png" width="23px" height="23px" style="margin-bottom:5px; opacity:0.45; filter:grayscale(100%); cursor: pointer" data-bind="click: $root.kingClick"/>
                       </span>
                       &nbsp
                       <i class="fa d-inline fa-circle" data-bind="style: {color: color}"></i>&nbsp&nbsp<input style="width:70%" data-bind="textInput: name, value: name" /> </h4>

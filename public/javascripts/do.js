@@ -63,9 +63,16 @@ function OggettoViewModel() {
 
     self.removeKing = function(data,event) { self.dragging = data; }
 
-    self.setKing = function(data,event) { self.dragging.isKing(0); data.isKing(1); self.calcola();}
+    self.setKing = function(data,event) { self.dragging.isKing(0); data.isKing(1); self.calcola(); self.currentKing = data;}
 
     self.dragging = "";
+    self.currentKing = self.membri()[0];
+
+    self.kingClick = function(data) {
+        self.currentKing.isKing(0);
+        data.isKing(1);
+        self.currentKing = data;
+    }
 
     /* OGGETTO */
 
