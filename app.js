@@ -56,7 +56,8 @@ app.post('/upload', function(req, res){
     // resize
     Jimp.read(fpath, function (err, img) {
     if (err) throw err;
-    img.resize(720, Jimp.AUTO)            // resize
+    img.exifRotate() // rotate
+        .resize(720, Jimp.AUTO)            // resize
         .quality(100)                 // set JPEG quality
         .write(fpath); // save
     
