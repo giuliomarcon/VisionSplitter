@@ -51,7 +51,7 @@ app.post('/upload', function(req, res){
     console.log('An error has occured: \n' + err);
   });
 
-  // once all the files have been uploaded, send a response to the clientx  
+  // once all the files have been uploaded, send a response to the clientx
   form.on('end', function() {
     // resize
     Jimp.read(fpath, function (err, img) {
@@ -60,9 +60,9 @@ app.post('/upload', function(req, res){
         .resize(720, Jimp.AUTO)            // resize
         .quality(100)                 // set JPEG quality
         .write(fpath); // save
-    
+
     res.end(fname);
-    });    
+    });
   });
 
   // parse the incoming request containing the form data
@@ -74,7 +74,8 @@ app.post('/recognition', function(req, res){
   var filepath = path.join("public/uploads/", req.body.image);
   client.documentTextDetection(filepath)
     .then((results) => {
-        fs.writeFile('assets/json/'+new Date().getTime()+'.json', results, 'utf8', function(){});
+        var currentTime = new Date().getTime();
+        fs.writeFile('test_jest/'+currentTime+'.json', results, 'utf8', function(){});
         var out = parser.analyzeReceipt(results);
         res.end(JSON.stringify(out));
         fs.unlinkSync(filepath);
@@ -86,7 +87,7 @@ app.post('/recognition', function(req, res){
 });
 
 app.post('/api/recognition', function(req, res){
-  
+
   // upload
   var form = new formidable.IncomingForm();
   form.multiples = true;
@@ -112,7 +113,7 @@ app.post('/api/recognition', function(req, res){
       })
       .catch((err) => {
         console.error('ERROR:', err);
-      });    
+      });
 
   });
 
