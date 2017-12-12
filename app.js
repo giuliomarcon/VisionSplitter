@@ -120,8 +120,8 @@ app.post('/api/recognition', function(req, res){
 });
 
 app.post('/api/split', function(req, res){
-  var oggetti = JSON.parse(req.body.oggetti);
-  var membri = JSON.parse(req.body.membri);
+  var oggetti = JSON.parse(req.body.items);
+  var membri = JSON.parse(req.body.members);
 
   var out = []
 
