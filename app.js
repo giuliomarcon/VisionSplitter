@@ -1,4 +1,3 @@
-//process.env.NODE_DEBUG = 'fs';
 const PORT = process.env.PORT || 5000;
 
 var express = require('express');
@@ -15,18 +14,20 @@ const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient();
 
 var bodyParser = require('body-parser');
+
 var parser = require('./lib/parsing.js');
 
 var fname = "";
+var fpath = "";
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser());
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'views/index.html'));
 });
 
-app.post('/upload', function(req, res){
+app.post('/upload', function(req, res) {
   // create an incoming form object
   var form = new formidable.IncomingForm();
 
@@ -53,13 +54,13 @@ app.post('/upload', function(req, res){
   // once all the files have been uploaded, send a response to the clientx
   form.on('end', function() {
     // resize
-    Jimp.read(fpath, function (err, img) {
-    if (err) throw err;
-    img.resize(720, Jimp.AUTO)            // resize
-        .quality(100)                 // set JPEG quality
+    Jimp.read(fpath, function(err, img) {
+      if (err) throw err;
+      img.resize(720, Jimp.AUTO) // resize
+        .quality(100) // set JPEG quality
         .write(fpath); // save
 
-    res.end(fname);
+      res.end(fname);
     });
   });
 
@@ -68,26 +69,25 @@ app.post('/upload', function(req, res){
 
 });
 
-app.post('/recognition', function(req, res){
-  var relativeImagePath = path.join("public/uploads/", req.body.image);
-  client.documentTextDetection(relativeImagePath)
+app.post('/recognition', function(req, res) {
+  var filepath = path.join("public/uploads/", req.body.image);
+  client.documentTextDetection(filepath)
     .then((results) => {
-
-        var currentTime = new Date().getTime();
-        var relativeJsonPath = path.join('assets/', currentTime+'.json');
-        fs.writeFile(relativeJsonPath ,JSON.stringify(results), 'utf8', function(){
-          console.log('Json saved in ' + relativeJsonPath);
-        });
-        var out = parser.analyzeReceipt(results, relativeImagePath, relativeJsonPath);
-        fs.unlinkSync(relativeImagePath);
-        res.end(JSON.stringify(out));
+      var currentTime = new Date().getTime();
+      fs.writeFile('test/' + currentTime + '_google.json', results, 'utf8', function() {});
+      var out = parser.analyzeReceipt(results);
+      var resultArray = JSON.stringify(out);
+      fs.writeFile('test/' + currentTime + '_parsed.json', resultArray, 'utf8', function() {});
+      res.end(resultArray);
+      fs.unlinkSync(filepath);
     })
     .catch((err) => {
       console.error('ERROR:', err);
     });
+
 });
 
-app.post('/api/recognition', function(req, res){
+app.post('/api/recognition', function(req, res) {
 
   // upload
   var form = new formidable.IncomingForm();
@@ -107,10 +107,10 @@ app.post('/api/recognition', function(req, res){
     var filepath = path.join("public/uploads/", fname);
     client.documentTextDetection(filepath)
       .then((results) => {
-          fs.writeFile('assets/json/'+new Date().getTime()+'.json', results, 'utf8', function(){});
-          var out = parser.analyzeReceipt(results);
-          res.end(JSON.stringify(out));
-          fs.unlinkSync(filepath);
+        fs.writeFile('assets/json/' + new Date().getTime() + '.json', results, 'utf8', function() {});
+        var out = parser.analyzeReceipt(results);
+        res.end(JSON.stringify(out));
+        fs.unlinkSync(filepath);
       })
       .catch((err) => {
         console.error('ERROR:', err);
@@ -122,7 +122,7 @@ app.post('/api/recognition', function(req, res){
 
 });
 
-app.post('/api/split', function(req, res){
+app.post('/api/split', function(req, res) {
   var oggetti = JSON.parse(req.body.oggetti);
   var membri = JSON.parse(req.body.membri);
 
@@ -130,33 +130,36 @@ app.post('/api/split', function(req, res){
 
   var total = 0;
   oggetti.forEach(function(feature) {
-      total += parseFloat(feature.price);
+    total += parseFloat(feature.price);
   });
 
   membri.forEach(function(i) {
     var tot_persona = 0;
-      oggetti.forEach(function(j) {
-        if (i.isking == 0) // se non è il king che ha pagato tutto
-        {
-          if (j.person.indexOf(i.name) != -1 || j.person.indexOf("Tutti") != -1) { // se l'oggetto è assegnato alla persona in considerazione oppure a tutti
-            var money = 0;
-            if (j.person.indexOf("Tutti") != -1)
-              money = parseFloat(j.price || 0) / parseFloat(membri.length);
-            else
-              money = parseFloat(j.price || 0) / parseFloat(j.person.length);
+    oggetti.forEach(function(j) {
+      if (i.isking == 0) // se non è il king che ha pagato tutto
+      {
+        if (j.person.indexOf(i.name) != -1 || j.person.indexOf("Tutti") != -1) { // se l'oggetto è assegnato alla persona in considerazione oppure a tutti
+          var money = 0;
+          if (j.person.indexOf("Tutti") != -1)
+            money = parseFloat(j.price || 0) / parseFloat(membri.length);
+          else
+            money = parseFloat(j.price || 0) / parseFloat(j.person.length);
 
-            tot_persona += money;
-          }
+          tot_persona += money;
         }
+      }
     });
 
-      tot_persona = tot_persona || 0;
-      out.push({name: i.name, total: tot_persona.toFixed(2)});
+    tot_persona = tot_persona || 0;
+    out.push({
+      name: i.name,
+      total: tot_persona.toFixed(2)
+    });
   });
 
   res.end(JSON.stringify(out));
 });
 
-var server = app.listen(PORT, function(){
-  console.log('Server listening on port '+PORT);
+var server = app.listen(PORT, function() {
+  console.log('Server listening on port ' + PORT);
 });

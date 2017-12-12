@@ -3,7 +3,7 @@ var util = require('util');
 var jsonfile = require('jsonfile');
 var path = require('path');
 
-const { registerFont, createCanvas, loadImage } = require('./lib/canvas')
+const { registerFont, createCanvas, loadImage } = require('canvas')
 registerFont('./assets/Roboto-Bold.ttf', {family: 'My Font'});
 
 // Draw cat with lime helmet
