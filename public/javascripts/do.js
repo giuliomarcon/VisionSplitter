@@ -72,6 +72,7 @@ function OggettoViewModel() {
         self.currentKing.isKing(0);
         data.isKing(1);
         self.currentKing = data;
+        self.calcola();
     }
 
     /* OGGETTO */
