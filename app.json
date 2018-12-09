@@ -2,7 +2,7 @@
   "name": "VisionSplitter",
   "description": "Simple web-app that lets you split shared expenses equally, with integrated OCR function that lets you read sales receipt. ",
   "repository": "https://github.com/giuliomarcon/VisionSplitter/",
-  "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/master/public/node.svg",
+  "logo": "https://cdn.jsdelivr.net/gh/heroku/node-js-getting-started@master/public/node.svg",
   "keywords": ["vision", "split", "bill", "heroku"],
   "image": "heroku/nodejs"
 }
